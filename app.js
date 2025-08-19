@@ -26,7 +26,7 @@ app.use(adminRoute);
 
 const connection = new IORedis({ maxRetriesPerRequest: null });
 
-const FeeResetWorker = new Worker(
+const worker = new Worker(
   myQueue.name,
   async job => {
 
@@ -38,7 +38,7 @@ const FeeResetWorker = new Worker(
       const rid = job.data.rid;
       
 
-      axios.post('http://school.local/cron_jobs/RunBullMq.php', { enrid, sessionid, branchid, name: job.name, tomonth, rid })
+      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunBullMq.php', { enrid, sessionid, branchid, name: job.name, tomonth, rid })
         .then(response => {
           console.log(job.data);
         })
@@ -54,7 +54,24 @@ const FeeResetWorker = new Worker(
       const status = job.data.status;
       const message = job.data.message;
       const razorpay_signature = job.data.razorpay_signature;
-      axios.post('http://school.local/cron_jobs/RunWebhookBullMq.php', { payid, orderid, branchid, status, message, razorpay_signature, name: job.name })
+      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunWebhookBullMq.php', { payid, orderid, branchid, status, message, razorpay_signature, name: job.name })
+        .then(response => {
+          console.log(job.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+
+    if(job.name == 'random_attendance') {
+      const branchid = job.data.branchid;
+      const sessionid = job.data.sessionid;
+      const enrid = job.data.enrid;
+      const dates = job.data.dates;
+      const userid = job.data.userid;
+      const priority = job.data.priority;
+
+      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunBulkAttendanceBullMq.php', { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
         .then(response => {
           console.log(job.data);
         })

@@ -40,3 +40,12 @@ exports.addWebhookJob =  async (req, res, next) => {
 
 };
 
+
+exports.addBulkAttendanceJob = async (req, res, next) => {
+
+    const { branchid, enrid, dates, jobName, userid, sessionid, priority } = req.body;
+
+    await myQueue.add(jobName || 'random_attendance', { branchid, enrid, dates, userid, sessionid, priority }, { priority: priority || 20 });
+    res.status(200).json({ message: 'Job added successfully' });
+
+};
