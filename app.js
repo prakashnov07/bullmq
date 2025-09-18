@@ -79,6 +79,24 @@ const worker = new Worker(
           console.error(error);
         });
     }
+
+    if(job.name == 'send_fee_reminder') {
+      const branchid = job.data.branchid;
+      const sessionid = job.data.sessionid;
+      const enrid = job.data.enrid;
+      const title = job.data.title;
+      const owner = job.data.owner;
+      const month = job.data.month;
+      const comment = job.data.comment;
+
+      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunSendFeeReminderBullMq.php', { branchid, enrid, sessionid, title, owner, month, comment, name: job.name })
+        .then(response => {
+          console.log(job.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
   },
   { connection },
 );

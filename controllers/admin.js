@@ -49,3 +49,11 @@ exports.addBulkAttendanceJob = async (req, res, next) => {
     res.status(200).json({ message: 'Job added successfully' });
 
 };
+
+exports.addSendFeeReminderJob = async (req, res, next) => {
+
+    const { enrid, title, month, comment, branchid, sessionid, owner, jobName, priority } = req.body;
+
+    await myQueue.add(jobName || 'send_fee_reminder', { branchid, enrid, sessionid, title, owner, month, comment }, { priority: priority || 19 });
+    res.status(200).json({ message: 'Job added successfully' });
+};
