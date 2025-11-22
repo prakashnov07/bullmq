@@ -1,0 +1,63 @@
+# Start with PM2
+# Development
+pm2 start ecosystem.config.js
+
+# Production
+pm2 start ecosystem.config.js --env production
+
+# Monitor processes
+pm2 monit
+
+# View logs
+pm2 logs
+
+# Reload without downtime
+pm2 reload bullmq-app
+
+
+
+#How to Run - Option 1: Direct Node.js
+# Instead of: node app.js
+# Run: 
+node cluster.js
+
+#Option 2: Update package.json
+
+{
+  "scripts": {
+    "start": "node app.js",
+    "start:cluster": "node cluster.js",
+    "dev": "nodemon app.js",
+    "dev:cluster": "nodemon cluster.js"
+  }
+}
+
+#Then run
+npm run start:cluster
+
+
+# Alternative: PM2 Approach (Recommended for Production)
+Instead of creating a cluster.js file, you can use PM2 which handles clustering automatically:
+
+# ecosystem.config.js will be used
+
+
+
+
+#Running Options
+#Development
+
+# Single process
+node app.js
+
+# Clustered
+node cluster.js
+
+
+#Production
+
+# With PM2
+pm2 start ecosystem.config.js --env production
+
+# With custom cluster file
+node cluster.js
