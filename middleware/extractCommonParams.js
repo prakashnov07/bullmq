@@ -5,7 +5,7 @@ const extractCommonParams = (req, res, next) => {
         medium: req.query.medium || req.body.medium || 'pwa',
         branchid: req.query.branchid || req.body.branchid,
         owner: req.query.owner || req.body.owner || req.query.phone || req.body.phone,
-        enrid: req.query.enrid || req.body.enrid || req.query.id || req.body.id,
+        enrid:  req.body.enrid || req.query.enrid,
         role: req.query.role || req.body.role,
         utype: req.query.utype || req.body.utype,
         token: req.get('Authorization') || '',
@@ -23,7 +23,7 @@ const extractCommonParams = (req, res, next) => {
         return res.status(400).json({
             error: 'Missing required parameters',
             missing: missingParams,
-            note: 'Required parameters: medium, branchid, owner, enrid, role, utype'
+            note: 'Required parameters: medium, branchid, owner, enrid, role, utype,token, clientSocketId, jobName, priority, ptype'
         });
     }
     

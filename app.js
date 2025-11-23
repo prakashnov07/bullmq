@@ -23,11 +23,6 @@ const io = new Server(server, {
   adapter: process.env.NODE_ENV === 'production' ? require('socket.io-redis')() : undefined
 });
 
-// Enable Redis adapter for multi-process Socket.IO
-if (process.env.NODE_ENV === 'production') {
-  const redisAdapter = require('socket.io-redis');
-  io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
-}
 
 // Make io available to routes
 app.set('io', io);
@@ -42,71 +37,50 @@ io.on('connection', (socket) => {
 });
 
 
+// IMPROVED CORS HANDLING
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'OPTIONS, GET, POST, PUT, PATCH, DELETE'
-  );
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  //Handle preflight OPTIONS requests
+  if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS preflight request for:', req.url);
+    res.status(200).end();
+    return;
+  }
+  
   next();
 });
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json({ limit: '1mb' }));
 
+// Add the common params middleware, now using route wise in admin routes
+// const extractCommonParams = require('./middleware/extractCommonParams');
+// app.use(extractCommonParams);
+
 const adminRoute = require('./routes/admin');
 app.use(adminRoute);
 
-// Add the common params middleware
-const extractCommonParams = require('./middleware/extractCommonParams');
-app.use(extractCommonParams);
+// const erpFeeWorker = require('./workers/erpFeeWorker');
 
+// IMPROVED: Create all workers using factory
+const { createAllWorkers } = require('./workers/workerFactory');
 
+console.log('Initializing workers...');
+const workers = createAllWorkers(io, workerCountPerProcess);
 
-
-// FIXED: Create workers properly
-const { createPullPolicyWorker } = require('./workers/pullPolicyWorker');
-const erpFeeWorker = require('./workers/erpFeeWorker');
-const {createHomeWorkWorker} = require('./workers/homeWorkWorker');
-createHomeWorkWorker(io); // Initialize homework worker
-
-const workers = [];
-
-// Create pull policy workers
-for (let i = 0; i < workerCountPerProcess; i++) {
-    const worker = createPullPolicyWorker(io);
-    
-    worker.on('error', (err) => {
-        console.error(`Pull Policy Worker ${i} error:`, err.message);
-    });
-    
-    worker.on('failed', (job, err) => {
-        console.error(`Pull Policy Job ${job.id} failed on worker ${i}:`, err.message);
-    });
-    
-    worker.on('stalled', (jobId) => {
-        console.warn(`Pull Policy Job ${jobId} stalled on worker ${i}`);
-    });
-    
-    workers.push(worker);
-}
-
-// Add ERP fee worker to workers array for proper cleanup
-workers.push(erpFeeWorker.worker);
-
-// Error handling for ERP fee worker
-erpFeeWorker.worker.on('error', err => {
-  console.error('ERP Fee Worker error:', err.message);
+console.log(`Total workers created: ${workers.length}`);
+workers.forEach(worker => {
+    console.log(`- ${worker.type} worker ${worker.id}`);
 });
 
-erpFeeWorker.worker.on('failed', (job, err) => {
-  console.error(`ERP Fee Job ${job.id} failed:`, err.message);
-});
+
 
 const port = process.env.PORT || 4040;
 server.listen(port, () => {
-  console.log(`Worker ${process.pid} listening on port ${port}`);
+  console.log(`Process ${process.pid} listening on port ${port} with ${workers.length} total workers`);
 });
 
 // Improved graceful shutdown
@@ -114,8 +88,8 @@ process.on('SIGTERM', async () => {
     console.log(`Process ${process.pid} received SIGTERM, shutting down gracefully...`);
     
     try {
-        // Close all BullMQ workers properly
-        await Promise.all(workers.map(worker => worker.close()));
+        // Close all workers
+        await Promise.all(workers.map(worker => worker.instance.close()));
         console.log('All workers closed successfully');
         
         // Close server
@@ -129,7 +103,6 @@ process.on('SIGTERM', async () => {
     }
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
     process.exit(1);

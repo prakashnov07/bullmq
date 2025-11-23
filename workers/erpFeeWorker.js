@@ -6,7 +6,7 @@ const myQueue = new Queue('pending-fees-reload-job');
 const { devUrl, productionUrl } = require('./utils/serverUrl');
 
 
-exports.worker = new Worker(
+exports.createErpFeeWorker = new Worker(
   myQueue.name,
   async job => {
 

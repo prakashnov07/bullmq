@@ -7,7 +7,7 @@ const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
 
 // Export a function that creates the worker with io instance
-exports.fetchHomeWorkWorker = (io) => {
+exports.createHomeWorkWorker = (io) => {
     return new Worker(
         'fetch-home-work-job',
         async job => {
@@ -19,17 +19,16 @@ exports.fetchHomeWorkWorker = (io) => {
                 // Add job processing timeout
                 const timeoutId = setTimeout(() => {
                     console.warn(`Job ${job.id} is taking too long, potential stall`);
-                }, 30000); // 30 seconds
+                }, 40000); // 40 seconds
 
                 try {
-                    const response = await axios.get(`${devApiUrl}/${job.name}`, {
-                        branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId
-                    }, 
-                    { timeout: 15000 , // 15 seconds timeout for the request
+                    const response = await axios.get(`${productionApiUrl}/${job.name}`, {
+                        params: {branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId},
+                        timeout: 40000 , // 40 seconds timeout for the request
                         
                             headers: {
                                 'content-type': 'application/json',
-                                'authorization': 'Bearer ' + token
+                                'Authorization': 'Bearer ' + token
                             }
                         }
                     );

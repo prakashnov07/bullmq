@@ -2,17 +2,17 @@
 const { createPullPolicyWorker } = require('./pullPolicyWorker');
 const { createHomeWorkWorker } = require('./homeWorkWorker');
 const { createErpFeeWorker } = require('./erpFeeWorker');
-const { createBulkAttendanceWorker } = require('./bulkAttendanceWorker');
-const { createFeeReminderWorker } = require('./feeReminderWorker');
-const { createMessageWorker } = require('./messageWorker');
+// const { createBulkAttendanceWorker } = require('./bulkAttendanceWorker');
+// const { createFeeReminderWorker } = require('./feeReminderWorker');
+// const { createMessageWorker } = require('./messageWorker');
 
 const workerFactories = {
     'pull-policy': createPullPolicyWorker,
     'homework': createHomeWorkWorker,
     'erp-fee': createErpFeeWorker,
-    'bulk-attendance': createBulkAttendanceWorker,
-    'fee-reminder': createFeeReminderWorker,
-    'message': createMessageWorker
+    // 'bulk-attendance': createBulkAttendanceWorker,
+    // 'fee-reminder': createFeeReminderWorker,
+    // 'message': createMessageWorker
 };
 
 const createAllWorkers = (io, workerCount = 1) => {
