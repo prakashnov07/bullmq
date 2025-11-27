@@ -3,7 +3,7 @@ const IORedis = require('ioredis');
 const myQueue = new Queue('pending-fees-reload-job');
 const policyQueue = new Queue('pull-policy-job');
 const homeworkQueue = new Queue('fetch-home-work-job');
-
+const messagesQueue = new Queue('add-fetch-messages-job');
 
 
 exports.addJob = async (req, res, next) => {
@@ -91,6 +91,22 @@ exports.postAddFetchHomeWorkJob = async (req, res, next) => {
     await homeworkQueue.add(req.commonParams.jobName || 'viewhomeworkself', {
        
         ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddFetchMessagesJob = async (req, res, next) => {
+   const id = req.body.id;
+    await messagesQueue.add(req.commonParams.jobName || 'home-page-messages-2', {
+       
+        ...req.getCommonJobData(),
+        id
     }, {
         priority: req.commonParams.priority || 1
     });

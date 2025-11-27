@@ -2,6 +2,7 @@
 const { createPullPolicyWorker } = require('./pullPolicyWorker');
 const { createHomeWorkWorker } = require('./homeWorkWorker');
 const { createErpFeeWorker } = require('./erpFeeWorker');
+const {createMessagesWorker} = require('./messagesWorker');
 // const { createBulkAttendanceWorker } = require('./bulkAttendanceWorker');
 // const { createFeeReminderWorker } = require('./feeReminderWorker');
 // const { createMessageWorker } = require('./messageWorker');
@@ -10,6 +11,7 @@ const workerFactories = {
     'pull-policy': createPullPolicyWorker,
     'homework': createHomeWorkWorker,
     'erp-fee': createErpFeeWorker,
+    'messages': createMessagesWorker,
     // 'bulk-attendance': createBulkAttendanceWorker,
     // 'fee-reminder': createFeeReminderWorker,
     // 'message': createMessageWorker

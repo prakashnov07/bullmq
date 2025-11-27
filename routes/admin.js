@@ -12,6 +12,7 @@ router.post('/add-send-fee-reminder-job', adminController.addSendFeeReminderJob)
 router.post('/add-send-message-job', adminController.addSendMessageJob);
 router.post('/add-pull-policy-job', isAuth, extractCommonParams, adminController.postAddPullPolicyJob);
 router.post('/add-fetch-home-work-job', isAuth, extractCommonParams, adminController.postAddFetchHomeWorkJob);
+router.post('/add-fetch-messages-job', isAuth, extractCommonParams, adminController.postAddFetchMessagesJob);
 
 
 
