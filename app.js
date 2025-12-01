@@ -11,7 +11,13 @@ const app = express();
 //     : require('os').cpus().length * 2;
 
     // Reduce worker count for better performance
-const workerCountPerProcess = process.env.NODE_ENV === 'production' ? 1 : 1;
+//const workerCountPerProcess = process.env.NODE_ENV === 'production' ? 1 : 1;
+
+
+// Or even more aggressive scaling, // Up to 32 workers
+const workerCountPerProcess = process.env.NODE_ENV === 'production' 
+    ? Math.min(require('os').cpus().length * 4, 32) 
+    : 1;
 
 const {createServer} = require('http');
 const {Server} = require('socket.io');

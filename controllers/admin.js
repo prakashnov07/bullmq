@@ -4,6 +4,13 @@ const myQueue = new Queue('pending-fees-reload-job');
 const policyQueue = new Queue('pull-policy-job');
 const homeworkQueue = new Queue('fetch-home-work-job');
 const messagesQueue = new Queue('add-fetch-messages-job');
+const checkUserValidityQueue = new Queue('check-user-validity-cached-job');
+const getSchoolDataQueue = new Queue('getschooldata-job');
+const getCmoQueue = new Queue('getcmo-job');
+const getAllClassesQueue = new Queue('getallclasses-job');
+const getAllSectionsQueue = new Queue('getallsections-job');
+const getSubjectsQueue = new Queue('getsubjects-job');
+const getPublicBanksQueue = new Queue('fetch-public-banks-job');
 
 
 exports.addJob = async (req, res, next) => {
@@ -107,6 +114,106 @@ exports.postAddFetchMessagesJob = async (req, res, next) => {
        
         ...req.getCommonJobData(),
         id
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddCheckUserValidityCachedJob = async (req, res, next) => {
+   const navigate = req.body.navigate;
+    await checkUserValidityQueue.add(req.commonParams.jobName || 'check-user-validity-cached', {
+       
+        ...req.getCommonJobData(),
+        navigate
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddFetchSchoolDataJob = async (req, res, next) => {
+    await getSchoolDataQueue.add(req.commonParams.jobName || 'getschooldata', {
+       
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddGetCmoJob = async (req, res, next) => {
+    await getCmoQueue.add(req.commonParams.jobName || 'getcmo', {
+       
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddGetAllClassesJob = async (req, res, next) => {
+    await getAllClassesQueue.add(req.commonParams.jobName || 'getallclasses', {
+       
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddGetAllSectionsJob = async (req, res, next) => {
+    await getAllSectionsQueue.add(req.commonParams.jobName || 'getallsections', {
+       
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddGetAllSubjectsJob = async (req, res, next) => {
+    await getSubjectsQueue.add(req.commonParams.jobName || 'getsubjects', {
+       
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddFetchPublicBanksJob = async (req, res, next) => {
+    await getPublicBanksQueue.add(req.commonParams.jobName || 'fetchpublicbanks', {
+       
+        ...req.getCommonJobData()
     }, {
         priority: req.commonParams.priority || 1
     });

@@ -7,46 +7,26 @@ const sharedConnection = new IORedis({
     host: 'localhost', //10.255.255.254
     port: 6379,
     
-    // // Timeout configurations
-    // connectTimeout: 10000,        // 10 seconds to establish connection
-    // commandTimeout: 5000,         // 5 seconds for commands to execute
-    // lazyConnect: true,
-    
-    // // Retry configurations
-    // maxRetriesPerRequest: null,      // Changed from null to prevent infinite retries
-    // retryDelayOnFailover: 100,
-    // retryDelayOnClusterDown: 300,
-    
-    // // Connection pool settings
-    // enableReadyCheck: false,
-    // enableOfflineQueue: false,
-    // family: 4,
-    // keepAlive: true,
-    
-    // // Performance settings
-    // maxmemoryPolicy: 'allkeys-lru',
-    
-    // // Error handling
-    // showFriendlyErrorStack: true
-
-
-
- 
-    // INCREASED timeout configurations
-    connectTimeout: 30000,        // 30 seconds to establish connection
-    commandTimeout: 15000,        // 15 seconds for commands (increased from 5)
-    lazyConnect: true,
-    
-    // CRITICAL: Must be null for BullMQ
     maxRetriesPerRequest: null,
-    retryDelayOnFailover: 500,    // Increased delay
-    retryDelayOnClusterDown: 1000,
-    
-    // Connection pool settings
+     retryDelayOnFailover: 100,
     enableReadyCheck: false,
-    enableOfflineQueue: false,
-    family: 4,
-    keepAlive: true,
+    maxLoadingTimeout: 1,
+    
+    // Connection pooling
+    lazyConnect: true,
+    keepAlive: 30000,
+    
+    //  for server Performance optimizations
+    // connectTimeout: 10000,
+    // commandTimeout: 5000,
+
+
+     // for local
+    connectTimeout: 30000,
+    commandTimeout: 15000,
+    
+    // Cluster mode if using Redis Cluster
+    // enableOfflineQueue: false,
     
     // Performance settings
     maxmemoryPolicy: 'allkeys-lru',

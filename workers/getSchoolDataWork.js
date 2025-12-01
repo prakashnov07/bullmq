@@ -1,6 +1,6 @@
 
 const { Worker } = require('bullmq');
-const axios = require('./utils/optimizedAxios');
+const axios = require('axios');
 const emitResult = require('./utils/emitResult');
 const sharedConnection = require('./utils/sharedConnection').sharedConnection;
 const sharedConfig = require('./utils/sharedConfig');
@@ -8,24 +8,19 @@ const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
 
 // Export a function that creates the worker with io instance
-exports.createMessagesWorker = (io) => {
+exports.createGetSchoolDataWorker = (io) => {
     return new Worker(
-        'add-fetch-messages-job',
+        'getschooldata-job',
         async job => {
-            if (job.name == 'home-page-messages-2') {
+            if (job.name == 'getschooldata') {
                 const jobId = job.id;
                 const name = job.name;
-                const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, id } = job.data;
-
-                // Add job processing timeout
-                // const timeoutId = setTimeout(() => {
-                //     console.warn(`Job ${job.id} is taking too long, potential stall`);
-                // }, 40000); // 40 seconds
+                const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId } = job.data;
 
                 try {
                     const response = await axios.get(`${productionApiUrl}/${job.name}`, {
-                        params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, id },
-                        // timeout: 40000, // 40 seconds timeout for the request
+                        params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId },
+                        // timeout: 40000 , // 40 seconds timeout for the request
 
                         headers: {
                             'content-type': 'application/json',
@@ -36,27 +31,21 @@ exports.createMessagesWorker = (io) => {
 
                     // clearTimeout(timeoutId);
 
-                    // console.log('messages data received:', response.data?.messages);
-
-                    // Now you can use the io instance properly
+                    // console.log('getschooldata received:', response.data?.schooldata);
 
                     emitResult(io, clientSocketId, {
                         jobId,
                         branchid,
                         ptype,
-                        lastMessageId: id,
-                        messages: response.data?.messages,
-                        scheduledMessages: response.data?.scheduledMessages,
+                        schooldata: response.data?.schooldata,
+                        role,
                         status: 'completed'
-                    }, 'messages-result');
+                    }, 'getschooldata-result');
 
-
-                    // return response.data?.messages;
-
+                    // return response.data?.schooldata;
                 } catch (error) {
                     // clearTimeout(timeoutId);
-                    console.error('messages job failed:', error);
-                    // Emit error to client
+                    console.error('getschooldata job failed:', error);
 
                     emitResult(io, clientSocketId, {
                         jobId,
@@ -64,7 +53,7 @@ exports.createMessagesWorker = (io) => {
                         ptype,
                         error: error.message,
                         status: 'failed'
-                    }, 'messages-error');
+                    }, 'getschooldata-error');
 
                     throw error;
                 }

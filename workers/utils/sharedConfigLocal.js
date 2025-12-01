@@ -1,16 +1,17 @@
 
 exports.workerConfig = {
-          concurrency: 50, 
+
+            concurrency: 1, //for local
+
 
             // Add delays between job processing
             settings: {
                 stalledInterval: 30000,
                 maxStalledCount: 1,
-              retryProcessDelay: 500  // 0.5 second delay between retries
+                retryProcessDelay: 2000  // 2 second delay between retries
             },
 
            removeOnComplete: 100,
            removeOnFail: 200,
-           
   
     }

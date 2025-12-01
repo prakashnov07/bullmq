@@ -8,19 +8,14 @@ const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
 
 // Export a function that creates the worker with io instance
-exports.createMessagesWorker = (io) => {
+exports.createSubjectsWorker = (io) => {
     return new Worker(
-        'add-fetch-messages-job',
+        'getsubjects-job',
         async job => {
-            if (job.name == 'home-page-messages-2') {
+            if (job.name == 'getsubjects') {
                 const jobId = job.id;
                 const name = job.name;
                 const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, id } = job.data;
-
-                // Add job processing timeout
-                // const timeoutId = setTimeout(() => {
-                //     console.warn(`Job ${job.id} is taking too long, potential stall`);
-                // }, 40000); // 40 seconds
 
                 try {
                     const response = await axios.get(`${productionApiUrl}/${job.name}`, {
@@ -34,28 +29,19 @@ exports.createMessagesWorker = (io) => {
                     }
                     );
 
-                    // clearTimeout(timeoutId);
-
-                    // console.log('messages data received:', response.data?.messages);
-
-                    // Now you can use the io instance properly
-
                     emitResult(io, clientSocketId, {
                         jobId,
                         branchid,
                         ptype,
                         lastMessageId: id,
-                        messages: response.data?.messages,
-                        scheduledMessages: response.data?.scheduledMessages,
+                        subjects: response.data?.subjects,
                         status: 'completed'
-                    }, 'messages-result');
+                    }, 'subjects-result');
 
-
-                    // return response.data?.messages;
 
                 } catch (error) {
                     // clearTimeout(timeoutId);
-                    console.error('messages job failed:', error);
+                    console.error('subjects job failed:', error);
                     // Emit error to client
 
                     emitResult(io, clientSocketId, {
@@ -64,8 +50,8 @@ exports.createMessagesWorker = (io) => {
                         ptype,
                         error: error.message,
                         status: 'failed'
-                    }, 'messages-error');
-
+                    }, 'subjects-error');
+                    
                     throw error;
                 }
             }
