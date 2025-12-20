@@ -84,7 +84,8 @@ workers.forEach(worker => {
 
 
 
-const port = process.env.PORT || 4040;
+// const port = process.env.PORT || 4040; // local
+const port = 4040; // production
 server.listen(port, () => {
   console.log(`Process ${process.pid} listening on port ${port} with ${workers.length} total workers`);
 });

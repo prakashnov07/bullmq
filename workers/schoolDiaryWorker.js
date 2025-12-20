@@ -8,14 +8,14 @@ const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
 
 // Export a function that creates the worker with io instance
-exports.createHomeWorkWorker = (io) => {
+exports.createSchoolDiaryWorker = (io) => {
     return new Worker(
-        'fetch-home-work-job',
+        'fetch-student-report-job',
         async job => {
-            if (job.name == 'viewhomeworkself') {
+            if (job.name == 'viewstudentreport') {
                 const jobId = job.id;
                 const name = job.name;
-                const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, reportdate } = job.data;
+                const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, reportdate, toreportdate, category, studentsforreportdetails } = job.data;
 
                 // Add job processing timeout
                 // const timeoutId = setTimeout(() => {
@@ -24,7 +24,7 @@ exports.createHomeWorkWorker = (io) => {
 
                 try {
                     const response = await axios.get(`${productionApiUrl}/${job.name}`, {
-                        params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, reportdate },
+                        params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, reportdate, toreportdate, category, studentsforreportdetails },
                         // timeout: 40000 , // 40 seconds timeout for the request
 
                         headers: {
@@ -44,15 +44,17 @@ exports.createHomeWorkWorker = (io) => {
                         ptype,
                         rows: response.data?.rows,
                         reportdate,
+                        toreportdate,
+                        category,
                         enrid,
                         status: 'completed'
-                    }, 'homework-result');
+                    }, 'school-diary-result');
 
                     // return response.data?.rows;
 
                 } catch (error) {
                     // clearTimeout(timeoutId);
-                    console.error('homework job failed:', error);
+                    console.error('school diary job failed:', error);
 
                     emitResult(io, clientSocketId, {
                         jobId,
@@ -60,7 +62,7 @@ exports.createHomeWorkWorker = (io) => {
                         ptype,
                         error: error.message,
                         status: 'failed'
-                    }, 'homework-error');
+                    }, 'school-diary-error');
 
                     throw error;
                 }

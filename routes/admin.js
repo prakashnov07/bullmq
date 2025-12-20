@@ -15,11 +15,13 @@ router.post('/add-fetch-home-work-job', isAuth, extractCommonParams, adminContro
 router.post('/add-fetch-messages-job', isAuth, extractCommonParams, adminController.postAddFetchMessagesJob);
 router.post('/add-check-user-validity-cached', isAuth, extractCommonParams, adminController.postAddCheckUserValidityCachedJob);
 router.post('/add-fetchschooldata', isAuth, extractCommonParams, adminController.postAddFetchSchoolDataJob);
+router.post('/add-storefcmtoken', isAuth, extractCommonParams, adminController.postAddStoreFCMTokenJob);
 router.post('/add-getcmo-job', isAuth, extractCommonParams, adminController.postAddGetCmoJob);
 router.post('/add-getallclasses-job', isAuth, extractCommonParams, adminController.postAddGetAllClassesJob);
 router.post('/add-getallsections-job', isAuth, extractCommonParams, adminController.postAddGetAllSectionsJob);
 router.post('/add-getsubjects-job', isAuth, extractCommonParams, adminController.postAddGetAllSubjectsJob);
 router.post('/add-fetch-public-banks-job', isAuth, extractCommonParams, adminController.postAddFetchPublicBanksJob);
+router.post('/add-fetch-student-report-job', isAuth, extractCommonParams, adminController.postAddFetchStudentReportJob);
 
 
 

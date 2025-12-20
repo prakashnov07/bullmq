@@ -9,7 +9,7 @@ module.exports = {
     },
     env_production: {
       NODE_ENV: 'production',
-      PORT: 4040
+      PORT: 3002
     },
     // Auto-restart configuration
     max_restarts: 10,

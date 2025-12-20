@@ -18,7 +18,7 @@ exports.createCheckUserValidityWorker = (io) => {
                 const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, navigate } = job.data;
 
                 try {
-                    const response = await axios.get(`${productionApiUrl}/${job.name}`, {
+                    const response = await axios.get(`${devApiUrl}/${job.name}`, {
                         params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId },
                         // timeout: 40000 , // 40 seconds timeout for the request
 

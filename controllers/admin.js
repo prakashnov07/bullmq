@@ -3,6 +3,7 @@ const IORedis = require('ioredis');
 const myQueue = new Queue('pending-fees-reload-job');
 const policyQueue = new Queue('pull-policy-job');
 const homeworkQueue = new Queue('fetch-home-work-job');
+const schoolDiaryQueue = new Queue('fetch-student-report-job');
 const messagesQueue = new Queue('add-fetch-messages-job');
 const checkUserValidityQueue = new Queue('check-user-validity-cached-job');
 const getSchoolDataQueue = new Queue('getschooldata-job');
@@ -11,6 +12,7 @@ const getAllClassesQueue = new Queue('getallclasses-job');
 const getAllSectionsQueue = new Queue('getallsections-job');
 const getSubjectsQueue = new Queue('getsubjects-job');
 const getPublicBanksQueue = new Queue('fetch-public-banks-job');
+const storeFCMTokenQueue = new Queue('storefcmtoken-job');
 
 
 exports.addJob = async (req, res, next) => {
@@ -94,10 +96,13 @@ exports.postAddPullPolicyJob = async (req, res, next) => {
 };
 
 exports.postAddFetchHomeWorkJob = async (req, res, next) => {
+
+    const {reportdate} = req.body;
    
     await homeworkQueue.add(req.commonParams.jobName || 'viewhomeworkself', {
        
-        ...req.getCommonJobData()
+        ...req.getCommonJobData(),
+        reportdate
     }, {
         priority: req.commonParams.priority || 1
     });
@@ -214,6 +219,43 @@ exports.postAddFetchPublicBanksJob = async (req, res, next) => {
     await getPublicBanksQueue.add(req.commonParams.jobName || 'fetchpublicbanks', {
        
         ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddStoreFCMTokenJob = async (req, res, next) => {
+    const fcmToken = req.body.fcmToken;
+    await storeFCMTokenQueue.add(req.commonParams.jobName || 'storefcmtoken', {
+       
+        ...req.getCommonJobData(),
+        fcmToken
+    }, {
+        priority: req.commonParams.priority || 50
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddFetchStudentReportJob = async (req, res, next) => {
+
+    const {reportdate, toreportdate, category, studentsforreportdetails} = req.body;
+   
+    await schoolDiaryQueue.add(req.commonParams.jobName || 'viewstudentreport', {
+       
+        ...req.getCommonJobData(),
+        reportdate,
+        toreportdate,
+        category,
+        studentsforreportdetails
     }, {
         priority: req.commonParams.priority || 1
     });

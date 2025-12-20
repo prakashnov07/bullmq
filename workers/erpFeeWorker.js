@@ -18,7 +18,7 @@ exports.createErpFeeWorker = new Worker(
       const rid = job.data.rid;
 
 
-      axios.post(`${devUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid })
+      axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid })
         .then(response => {
           console.log(job.data);
         })
@@ -34,7 +34,7 @@ exports.createErpFeeWorker = new Worker(
       const status = job.data.status;
       const message = job.data.message;
       const razorpay_signature = job.data.razorpay_signature;
-      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunWebhookBullMq.php', { payid, orderid, branchid, status, message, razorpay_signature, name: job.name })
+      axios.post(`${productionUrl}/cron_jobs/RunWebhookBullMq.php`, { payid, orderid, branchid, status, message, razorpay_signature, name: job.name })
         .then(response => {
           console.log(job.data);
         })
@@ -51,7 +51,7 @@ exports.createErpFeeWorker = new Worker(
       const userid = job.data.userid;
       const priority = job.data.priority;
 
-      axios.post('https://schooldev.siddhantait.com/cron_jobs/RunBulkAttendanceBullMq.php', { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
+      axios.post(`${productionUrl}/cron_jobs/RunBulkAttendanceBullMq.php`, { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
         .then(response => {
           console.log(job.data);
         })
@@ -69,7 +69,7 @@ exports.createErpFeeWorker = new Worker(
       const month = job.data.month;
       const comment = job.data.comment;
 
-      axios.post('http://school.local/cron_jobs/RunSendFeeReminderBullMq.php', { branchid, enrid, sessionid, title, owner, month, comment, name: job.name })
+      axios.post(`${productionUrl}/cron_jobs/RunSendFeeReminderBullMq.php`, { branchid, enrid, sessionid, title, owner, month, comment, name: job.name })
         .then(response => {
           console.log(job.data);
         })
@@ -89,7 +89,7 @@ exports.createErpFeeWorker = new Worker(
       const sectionid = job.data.sectionid;
       const token = job.data.token;
 
-      axios.post('http://school.local/cron_jobs/RunSendMessageBullMq.php', { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token, name: job.name })
+      axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token, name: job.name })
         .then(response => {
           console.log(job.data);
         })

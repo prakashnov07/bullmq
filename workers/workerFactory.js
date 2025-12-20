@@ -10,6 +10,8 @@ const {createClassesWorker}= require('./classesWorker');
 const {createSectionsWorker}= require('./sectionsWorker');
 const {createSubjectsWorker}= require('./subjectsWorker');
 const {createBanksWorker}= require('./banksWorker');
+const { createFCMTokenWorker } = require('./fcmTokenWorker');
+const {createSchoolDiaryWorker} = require('./schoolDiaryWorker');
 // const { createBulkAttendanceWorker } = require('./bulkAttendanceWorker');
 // const { createFeeReminderWorker } = require('./feeReminderWorker');
 // const { createMessageWorker } = require('./messageWorker');
@@ -26,6 +28,8 @@ const workerFactories = {
     'cmo': createCmoWorker,
     'getsubjects': createSubjectsWorker,
     'fetch-public-banks': createBanksWorker,
+    'storeFCMToken': createFCMTokenWorker,
+    'fetch-student-report': createSchoolDiaryWorker,
 
     // 'bulk-attendance': createBulkAttendanceWorker,
     // 'fee-reminder': createFeeReminderWorker,
