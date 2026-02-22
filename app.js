@@ -23,11 +23,57 @@ const {createServer} = require('http');
 const {Server} = require('socket.io');
 const server = createServer(app);
 
-const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
-   // Enable sticky sessions for cluster
-  adapter: process.env.NODE_ENV === 'production' ? require('socket.io-redis')() : undefined
-});
+// Production-ready Socket.IO configuration
+let socketConfig = {
+  cors: { 
+    origin: process.env.NODE_ENV === 'production' 
+      ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] 
+      : '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  },
+  transports: ['websocket', 'polling'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  upgradeTimeout: 30000,
+  maxHttpBufferSize: 1e6,
+  allowEIO3: true
+};
+
+// Add Redis adapter for production cluster mode
+if (process.env.NODE_ENV === 'production') {
+  try {
+    const { createAdapter } = require('@socket.io/redis-adapter');
+    const { createClient } = require('redis');
+    
+    const pubClient = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
+      retry_strategy: (options) => {
+        if (options.total_retry_time > 1000 * 60 * 60) {
+          return new Error('Redis retry time exhausted');
+        }
+        return Math.min(options.attempt * 100, 3000);
+      }
+    });
+    const subClient = pubClient.duplicate();
+    
+    // Connect and set adapter
+    Promise.all([pubClient.connect(), subClient.connect()])
+      .then(() => {
+        const redisAdapter = createAdapter(pubClient, subClient);
+        io.adapter(redisAdapter);
+        console.log('✅ Redis adapter configured for production cluster mode');
+      })
+      .catch((error) => {
+        console.warn('⚠️  Redis adapter failed, Socket.IO will use memory store:', error.message);
+      });
+  } catch (error) {
+    console.warn('⚠️  Redis adapter dependencies not found:', error.message);
+  }
+}
+
+const io = new Server(server, socketConfig);
 
 
 // Make io available to routes
@@ -85,9 +131,11 @@ workers.forEach(worker => {
 
 
 // const port = process.env.PORT || 4040; // local
-const port = 4040; // production
-server.listen(port, () => {
+const port = process.env.PORT || 4040; // Use environment PORT or default to 4040
+server.listen(port, '0.0.0.0', () => {
   console.log(`Process ${process.pid} listening on port ${port} with ${workers.length} total workers`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Socket.IO CORS origin: ${socketConfig.cors.origin}`);
 });
 
 // Improved graceful shutdown

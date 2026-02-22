@@ -18,7 +18,7 @@ exports.createErpFeeWorker = new Worker(
       const rid = job.data.rid;
 
 
-      axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid })
+      axios.post(`${devUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid })
         .then(response => {
           console.log(job.data);
         })
@@ -51,7 +51,7 @@ exports.createErpFeeWorker = new Worker(
       const userid = job.data.userid;
       const priority = job.data.priority;
 
-      axios.post(`${productionUrl}/cron_jobs/RunBulkAttendanceBullMq.php`, { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
+      axios.post(`${devUrl}/cron_jobs/RunBulkAttendanceBullMq.php`, { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
         .then(response => {
           console.log(job.data);
         })

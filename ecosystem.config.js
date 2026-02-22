@@ -4,12 +4,15 @@ module.exports = {
     script: './app.js',
     instances: 'max', // Use all CPU cores
     exec_mode: 'cluster',
+    // Enable sticky sessions for Socket.IO in cluster mode
+    instance_var: 'INSTANCE_ID',
     env: {
       NODE_ENV: 'development'
     },
     env_production: {
       NODE_ENV: 'production',
-      PORT: 3002
+      PORT: 3003,  // Match the port in app.js
+      FRONTEND_URL: '#' // Set your actual frontend URL
     },
     // Auto-restart configuration
     max_restarts: 10,
