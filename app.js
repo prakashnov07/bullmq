@@ -14,10 +14,9 @@ const app = express();
 //const workerCountPerProcess = process.env.NODE_ENV === 'production' ? 1 : 1;
 
 
-// Or even more aggressive scaling, // Up to 32 workers
-const workerCountPerProcess = process.env.NODE_ENV === 'production' 
-    ? Math.min(require('os').cpus().length * 4, 32) 
-    : 1;
+// Reduce worker count for better performance, PM2 runs on max cores.
+// Throughput is handled by PM2 clustering and BullMQ's concurrency: 50 setting.
+const workerCountPerProcess = 1;
 
 const {createServer} = require('http');
 const {Server} = require('socket.io');
