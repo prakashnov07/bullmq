@@ -1,7 +1,7 @@
 
 const { Worker } = require('bullmq');
 const axios = require('axios');
-const { connectionOptions } = require('./utils/sharedConnection');
+const { sharedConnection } = require('./utils/sharedConnection');
 const sharedConfig = require('./utils/sharedConfig');
 const { devUrl, productionUrl } = require('./utils/serverUrl');
 
@@ -90,7 +90,7 @@ exports.createPullPolicyWorker = (io) => {
             }
         },
         {
-            connection: connectionOptions,
+            connection: sharedConnection,
            ...sharedConfig.workerConfig,
         }
     );
