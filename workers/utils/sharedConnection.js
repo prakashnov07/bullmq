@@ -1,6 +1,4 @@
-
-const IORedis = require('ioredis');
-const sharedConnection = new IORedis({
+const connectionOptions = {
     
     
     
@@ -34,23 +32,6 @@ const sharedConnection = new IORedis({
     // Error handling
     showFriendlyErrorStack: true
 
-});
+};
 
-// Connection event handlers
-sharedConnection.on('connect', () => {
-    console.log('Redis connected successfully');
-});
-
-sharedConnection.on('error', (err) => {
-    console.error('Redis connection error:', err.message);
-});
-
-sharedConnection.on('close', () => {
-    console.log('Redis connection closed');
-});
-
-sharedConnection.on('reconnecting', () => {
-    console.log('Redis reconnecting...');
-});
-
-module.exports = { sharedConnection };
+module.exports = { connectionOptions };

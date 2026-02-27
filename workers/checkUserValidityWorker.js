@@ -2,7 +2,7 @@
 const { Worker } = require('bullmq');
 const axios = require('axios');
 const emitResult = require('./utils/emitResult');
-const sharedConnection = require('./utils/sharedConnection').sharedConnection;
+const { connectionOptions } = require('./utils/sharedConnection');
 const sharedConfig = require('./utils/sharedConfig');
 const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
@@ -18,7 +18,7 @@ exports.createCheckUserValidityWorker = (io) => {
                 const { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId, navigate } = job.data;
 
                 try {
-                    const response = await axios.get(`${devApiUrl}/${job.name}`, {
+                    const response = await axios.get(`${productionApiUrl}/${job.name}`, {
                         params: { branchid, owner, enrid, role, utype, medium, token, ptype, clientSocketId },
                         // timeout: 40000 , // 40 seconds timeout for the request
 
@@ -62,7 +62,7 @@ exports.createCheckUserValidityWorker = (io) => {
             }
         },
         {
-            connection: sharedConnection,
+            connection: connectionOptions,
             ...sharedConfig.workerConfig,
         }
     );

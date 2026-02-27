@@ -1,7 +1,7 @@
 
 const { Worker } = require('bullmq');
 const axios = require('axios');
-const sharedConnection = require('./utils/sharedConnection').sharedConnection;
+const { connectionOptions } = require('./utils/sharedConnection');
 const sharedConfig = require('./utils/sharedConfig');
 const { devUrl, productionUrl } = require('./utils/serverUrl');
 
@@ -23,7 +23,7 @@ exports.createPullPolicyWorker = (io) => {
                 }, 30000); // 30 seconds
 
                 try {
-                    const response = await axios.post(`${devUrl}/cron_jobs/RunPullPolicyBullMq.php`, {
+                    const response = await axios.post(`${productionUrl}/cron_jobs/RunPullPolicyBullMq.php`, {
                         branchid, ptype, name: job.name
                     }, 
                     { timeout: 15000 , // 15 seconds timeout for the request
@@ -90,7 +90,7 @@ exports.createPullPolicyWorker = (io) => {
             }
         },
         {
-            connection: sharedConnection,
+            connection: connectionOptions,
            ...sharedConfig.workerConfig,
         }
     );

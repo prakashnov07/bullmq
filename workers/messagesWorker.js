@@ -2,7 +2,7 @@
 const { Worker } = require('bullmq');
 const axios = require('./utils/optimizedAxios');
 const emitResult = require('./utils/emitResult');
-const sharedConnection = require('./utils/sharedConnection').sharedConnection;
+const { connectionOptions } = require('./utils/sharedConnection');
 const sharedConfig = require('./utils/sharedConfig');
 const { devApiUrl, productionApiUrl } = require('./utils/serverUrl');
 
@@ -71,7 +71,7 @@ exports.createMessagesWorker = (io) => {
             }
         },
         {
-            connection: sharedConnection,
+            connection: connectionOptions,
             ...sharedConfig.workerConfig,
         }
     );
