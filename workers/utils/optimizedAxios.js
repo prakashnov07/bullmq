@@ -4,7 +4,7 @@ const https = require('https');
 const http = require('http');
 
 const optimizedAxios = axios.create({
-    timeout: 5000, // Reduced from 40 seconds
+    timeout: 60000, // Reduced from 40 seconds
     maxRedirects: 2,
     
     // Connection pooling
@@ -12,14 +12,14 @@ const optimizedAxios = axios.create({
         keepAlive: true,
         maxSockets: 100,
         maxFreeSockets: 10,
-        timeout: 5000,
+        timeout: 60000,
     }),
     
     httpsAgent: new https.Agent({
         keepAlive: true,
         maxSockets: 100,
         maxFreeSockets: 10,
-        timeout: 5000,
+        timeout: 60000,
     })
 });
 
