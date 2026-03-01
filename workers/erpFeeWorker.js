@@ -17,14 +17,13 @@ exports.createErpFeeWorker = (io) => {
         const tomonth = job.data.tomonth;
         const rid = job.data.rid;
 
-
-        axios.post(`${devUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid })
-          .then(response => {
-            console.log(job.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
       }
 
       if (job.name == 'webhook') {
@@ -34,13 +33,14 @@ exports.createErpFeeWorker = (io) => {
         const status = job.data.status;
         const message = job.data.message;
         const razorpay_signature = job.data.razorpay_signature;
-        axios.post(`${productionUrl}/cron_jobs/RunWebhookBullMq.php`, { payid, orderid, branchid, status, message, razorpay_signature, name: job.name })
-          .then(response => {
-            console.log(job.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunWebhookBullMq.php`, { payid, orderid, branchid, status, message, razorpay_signature, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
       }
 
       if (job.name == 'random_attendance') {
@@ -51,13 +51,13 @@ exports.createErpFeeWorker = (io) => {
         const userid = job.data.userid;
         const priority = job.data.priority;
 
-        axios.post(`${devUrl}/cron_jobs/RunBulkAttendanceBullMq.php`, { branchid, enrid, dates, userid, sessionid, priority, name: job.name })
-          .then(response => {
-            console.log(job.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunBulkAttendanceBullMq.php`, { branchid, enrid, dates, userid, sessionid, priority, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
       }
 
       if (job.name == 'send_fee_reminder') {
@@ -69,13 +69,13 @@ exports.createErpFeeWorker = (io) => {
         const month = job.data.month;
         const comment = job.data.comment;
 
-        axios.post(`${productionUrl}/cron_jobs/RunSendFeeReminderBullMq.php`, { branchid, enrid, sessionid, title, owner, month, comment, name: job.name })
-          .then(response => {
-            console.log(job.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunSendFeeReminderBullMq.php`, { branchid, enrid, sessionid, title, owner, month, comment, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
       }
 
       if (job.name == 'send_message') {
@@ -89,13 +89,13 @@ exports.createErpFeeWorker = (io) => {
         const sectionid = job.data.sectionid;
         const token = job.data.token;
 
-        axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token, name: job.name })
-          .then(response => {
-            console.log(job.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
       }
     },
     {  
