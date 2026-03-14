@@ -1,16 +1,17 @@
-const { Queue, Worker } = require('bullmq');
+const { Worker } = require('bullmq');
 const axios = require('axios');
-const myQueue = new Queue('pending-fees-reload-job');
+const QUEUE_NAME = 'pending-fees-reload-job';
 const { devUrl, productionUrl } = require('./utils/serverUrl');
 const { sharedConnection } = require('./utils/sharedConnection');
 const sharedConfig = require('./utils/sharedConfig');
 
 exports.createErpFeeWorker = (io) => {
   return new Worker(
-    myQueue.name,
+    QUEUE_NAME,
     async job => {
+      console.log(`[WORKER] Processing job: ${job.id} (Name: ${job.name})`);
 
-      if (job.name == 'reset-feehead') {
+      if (job.name == 'reset-feehead' || job.name == 'enquiry-receipt') {
         const enrid = job.data.enrid;
         const sessionid = job.data.sessionid;
         const branchid = job.data.branchid;
@@ -18,8 +19,14 @@ exports.createErpFeeWorker = (io) => {
         const rid = job.data.rid;
 
         try {
-          await axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
-          console.log(job.data);
+          // Extend the lock every 30s to prevent stalling during long PHP calls
+          const keepAlive = setInterval(() => job.extendLock(300000).catch(() => {}), 30000);
+          try {
+            await axios.post(`${devUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
+            console.log(job.data);
+          } finally {
+            clearInterval(keepAlive);
+          }
         } catch (error) {
           console.error(error);
           throw error;

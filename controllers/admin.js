@@ -1,18 +1,19 @@
 const { Queue, Worker } = require('bullmq');
-const IORedis = require('ioredis');
-const myQueue = new Queue('pending-fees-reload-job');
-const policyQueue = new Queue('pull-policy-job');
-const homeworkQueue = new Queue('fetch-home-work-job');
-const schoolDiaryQueue = new Queue('fetch-student-report-job');
-const messagesQueue = new Queue('add-fetch-messages-job');
-const checkUserValidityQueue = new Queue('check-user-validity-cached-job');
-const getSchoolDataQueue = new Queue('getschooldata-job');
-const getCmoQueue = new Queue('getcmo-job');
-const getAllClassesQueue = new Queue('getallclasses-job');
-const getAllSectionsQueue = new Queue('getallsections-job');
-const getSubjectsQueue = new Queue('getsubjects-job');
-const getPublicBanksQueue = new Queue('fetch-public-banks-job');
-const storeFCMTokenQueue = new Queue('storefcmtoken-job');
+const { sharedConnection } = require('../workers/utils/sharedConnection');
+const queueOpts = { connection: sharedConnection };
+const myQueue = new Queue('pending-fees-reload-job', queueOpts);
+const policyQueue = new Queue('pull-policy-job', queueOpts);
+const homeworkQueue = new Queue('fetch-home-work-job', queueOpts);
+const schoolDiaryQueue = new Queue('fetch-student-report-job', queueOpts);
+const messagesQueue = new Queue('add-fetch-messages-job', queueOpts);
+const checkUserValidityQueue = new Queue('check-user-validity-cached-job', queueOpts);
+const getSchoolDataQueue = new Queue('getschooldata-job', queueOpts);
+const getCmoQueue = new Queue('getcmo-job', queueOpts);
+const getAllClassesQueue = new Queue('getallclasses-job', queueOpts);
+const getAllSectionsQueue = new Queue('getallsections-job', queueOpts);
+const getSubjectsQueue = new Queue('getsubjects-job', queueOpts);
+const getPublicBanksQueue = new Queue('fetch-public-banks-job', queueOpts);
+const storeFCMTokenQueue = new Queue('storefcmtoken-job', queueOpts);
 
 
 exports.addJob = async (req, res, next) => {
@@ -29,8 +30,15 @@ exports.addJob = async (req, res, next) => {
     //     res.status(200).json({ message: 'Job added successfully' });
     // });
 
-    await myQueue.add(jobName, { enrid, sessionid, branchid, tomonth, rid, jobName }, { delay });
-    res.status(200).json({ message: 'Job added successfully' });
+    const jobId = `erpFee-${enrid}-${sessionid}-${branchid}-${tomonth}-${rid}-${jobName}`;
+    
+    console.log(`[ADMIN] Adding job: ${jobName} with ID: ${jobId}`);
+    
+    await myQueue.add(jobName, { enrid, sessionid, branchid, tomonth, rid, jobName }, { 
+        delay,
+        jobId // Determinstic ID prevents duplicates
+    });
+    res.status(200).json({ message: 'Job added successfully', jobId });
 
 };
 
@@ -46,8 +54,15 @@ exports.addWebhookJob = async (req, res, next) => {
     const delay = req.body.delay || 30000; // Default delay of 30 seconds
 
 
-    await myQueue.add(jobName, { payid, orderid, branchid, status, message, razorpay_signature, jobName }, { delay });
-    res.status(200).json({ message: 'Job added successfully' });
+    const jobId = `webhook-${payid}-${orderid}-${branchid}-${status}-${jobName}`;
+
+    console.log(`[ADMIN] Adding Webhook job: ${jobName} with ID: ${jobId}`);
+
+    await myQueue.add(jobName, { payid, orderid, branchid, status, message, razorpay_signature, jobName }, { 
+        delay,
+        jobId 
+    });
+    res.status(200).json({ message: 'Job added successfully', jobId });
 
 };
 
