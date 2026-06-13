@@ -11,7 +11,14 @@ const {createSectionsWorker}= require('./sectionsWorker');
 const {createSubjectsWorker}= require('./subjectsWorker');
 const {createBanksWorker}= require('./banksWorker');
 const { createFCMTokenWorker } = require('./fcmTokenWorker');
-const {createSchoolDiaryWorker} = require('./schoolDiaryWorker');
+const { createSchoolDiaryWorker } = require('./schoolDiaryWorker');
+const { createOnlineClassesWorker } = require('./onlineClassesWorker');
+const { createOnlineExamsWorker } = require('./onlineExamsWorker');
+const { createResultDetailsWorker } = require('./resultDetailsWorker');
+const { createStudentBusIdWorker } = require('./studentBusIdWorker');
+const { createTransportSettingsWorker } = require('./transportSettingsWorker');
+const { createAllTransportStationsWorker } = require('./allTransportStationsWorker');
+const { createUpdateAppTransportWorker } = require('./updateAppTransportWorker');
 // const { createBulkAttendanceWorker } = require('./bulkAttendanceWorker');
 // const { createFeeReminderWorker } = require('./feeReminderWorker');
 // const { createMessageWorker } = require('./messageWorker');
@@ -30,6 +37,13 @@ const workerFactories = {
     'fetch-public-banks': createBanksWorker,
     'storeFCMToken': createFCMTokenWorker,
     'fetch-student-report': createSchoolDiaryWorker,
+    'online-classes-student': createOnlineClassesWorker,
+    'online-exams-student': createOnlineExamsWorker,
+    'getallresultdetails': createResultDetailsWorker,
+    'student-busid': createStudentBusIdWorker,
+    'transport-settings-app': createTransportSettingsWorker,
+    'all-transport-stations': createAllTransportStationsWorker,
+    'update-app-transport': createUpdateAppTransportWorker,
 
     // 'bulk-attendance': createBulkAttendanceWorker,
     // 'fee-reminder': createFeeReminderWorker,

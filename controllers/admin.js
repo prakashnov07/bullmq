@@ -14,6 +14,13 @@ const getAllSectionsQueue = new Queue('getallsections-job', queueOpts);
 const getSubjectsQueue = new Queue('getsubjects-job', queueOpts);
 const getPublicBanksQueue = new Queue('fetch-public-banks-job', queueOpts);
 const storeFCMTokenQueue = new Queue('storefcmtoken-job', queueOpts);
+const onlineClassesQueue = new Queue('online-classes-student-job', queueOpts);
+const onlineExamsQueue = new Queue('online-exams-student-job', queueOpts);
+const getAllResultDetailsQueue = new Queue('getallresultdetails-job', queueOpts);
+const studentBusIdQueue = new Queue('student-busid-job', queueOpts);
+const transportSettingsQueue = new Queue('transport-settings-app-job', queueOpts);
+const allTransportStationsQueue = new Queue('all-transport-stations-job', queueOpts);
+const updateAppTransportQueue = new Queue('update-app-transport-job', queueOpts);
 
 
 exports.addJob = async (req, res, next) => {
@@ -271,6 +278,105 @@ exports.postAddFetchStudentReportJob = async (req, res, next) => {
         toreportdate,
         category,
         studentsforreportdetails
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddOnlineClassesJob = async (req, res, next) => {
+    await onlineClassesQueue.add(req.commonParams.jobName || 'online-classes-student', {
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddOnlineExamsJob = async (req, res, next) => {
+    await onlineExamsQueue.add(req.commonParams.jobName || 'online-exams-student', {
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddGetAllResultDetailsJob = async (req, res, next) => {
+    await getAllResultDetailsQueue.add(req.commonParams.jobName || 'getallresultdetails', {
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddStudentBusIdJob = async (req, res, next) => {
+    const { regno } = req.body;
+    await studentBusIdQueue.add(req.commonParams.jobName || 'student-busid', {
+        ...req.getCommonJobData(),
+        regno
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddTransportSettingsAppJob = async (req, res, next) => {
+    const { month } = req.body;
+    await transportSettingsQueue.add(req.commonParams.jobName || 'transport-settings-app', {
+        ...req.getCommonJobData(),
+        month
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddAllTransportStationsJob = async (req, res, next) => {
+    await allTransportStationsQueue.add(req.commonParams.jobName || 'all-transport-stations', {
+        ...req.getCommonJobData()
+    }, {
+        priority: req.commonParams.priority || 1
+    });
+
+    res.status(200).json({
+        message: 'Job added successfully',
+        note: 'Results will be sent via WebSocket'
+    });
+};
+
+exports.postAddUpdateAppTransportJob = async (req, res, next) => {
+    const { action, month, routeid } = req.body;
+    await updateAppTransportQueue.add(req.commonParams.jobName || 'update-app-transport', {
+        ...req.getCommonJobData(),
+        action,
+        month,
+        routeid
     }, {
         priority: req.commonParams.priority || 1
     });

@@ -22,6 +22,13 @@ router.post('/add-getallsections-job', isAuth, extractCommonParams, adminControl
 router.post('/add-getsubjects-job', isAuth, extractCommonParams, adminController.postAddGetAllSubjectsJob);
 router.post('/add-fetch-public-banks-job', isAuth, extractCommonParams, adminController.postAddFetchPublicBanksJob);
 router.post('/add-fetch-student-report-job', isAuth, extractCommonParams, adminController.postAddFetchStudentReportJob);
+router.post('/add-online-classes-job', isAuth, extractCommonParams, adminController.postAddOnlineClassesJob);
+router.post('/add-online-exams-job', isAuth, extractCommonParams, adminController.postAddOnlineExamsJob);
+router.post('/add-getallresultdetails-job', isAuth, extractCommonParams, adminController.postAddGetAllResultDetailsJob);
+router.post('/add-student-busid-job', isAuth, extractCommonParams, adminController.postAddStudentBusIdJob);
+router.post('/add-transport-settings-app-job', isAuth, extractCommonParams, adminController.postAddTransportSettingsAppJob);
+router.post('/add-all-transport-stations-job', isAuth, extractCommonParams, adminController.postAddAllTransportStationsJob);
+router.post('/add-update-app-transport-job', isAuth, extractCommonParams, adminController.postAddUpdateAppTransportJob);
 
 
 
