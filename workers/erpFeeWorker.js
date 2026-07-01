@@ -91,13 +91,29 @@ exports.createErpFeeWorker = (io) => {
         const enrid = job.data.enrid;
         const title = job.data.title;
         const owner = job.data.owner;
+        const mobile = job.data.mobile;
         const content = job.data.content;
         const classid = job.data.classid;
         const sectionid = job.data.sectionid;
         const token = job.data.token;
 
         try {
-          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token, name: job.name });
+          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+      }
+
+      if (job.name == 'send_message_bulk') {
+        const branchid = job.data.branchid;
+        const title = job.data.title;
+        const content = job.data.content;
+        const tokens = job.data.tokens;
+
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBulkBullMq.php`, { branchid, title, content, tokens, name: job.name });
           console.log(job.data);
         } catch (error) {
           console.error(error);

@@ -93,9 +93,47 @@ exports.addSendFeeReminderJob = async (req, res, next) => {
 
 exports.addSendMessageJob = async (req, res, next) => {
 
-    const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, jobName, priority } = req.body;
-    await myQueue.add(jobName || 'send_message', { branchid, enrid, sessionid, title, owner, content, classid, sectionid, token }, { priority: priority || 18 });
+    const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, mobile, jobName, priority } = req.body;
+    await myQueue.add(jobName || 'send_message', { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token }, { priority: priority || 18 });
     res.status(200).json({ message: 'Job added successfully' });
+};
+
+exports.addSendMessageBulkJob = async (req, res, next) => {
+    const { token, content, title, branchid, priority } = req.body;
+    const tokens = Array.isArray(token) ? token : (token ? [token] : []);
+
+    if (tokens.length === 0) {
+        return res.status(400).json({ message: 'No tokens provided' });
+    }
+
+    const jobName = req.body.jobName || 'send_message_bulk';
+    const delay = req.body.delay || 0;
+
+    const chunkSize = 100;
+    const jobs = [];
+
+    for (let i = 0; i < tokens.length; i += chunkSize) {
+        const tokenChunk = tokens.slice(i, i + chunkSize);
+        jobs.push({
+            name: jobName,
+            data: {
+                branchid,
+                title,
+                content,
+                tokens: tokenChunk
+            },
+            opts: {
+                priority: priority || 19,
+                delay: delay + Math.floor(i / chunkSize) * 1000
+            }
+        });
+    }
+
+    console.log(`[ADMIN] Adding bulk message jobs: ${jobName}, total jobs created: ${jobs.length} for ${tokens.length} tokens`);
+    
+    await myQueue.addBulk(jobs);
+
+    res.status(200).json({ message: 'Bulk message jobs added successfully', jobCount: jobs.length });
 };
 
 exports.postAddPullPolicyJob = async (req, res, next) => {
