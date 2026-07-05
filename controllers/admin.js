@@ -39,6 +39,12 @@ exports.addJob = async (req, res, next) => {
 
     const jobId = `erpFee-${enrid}-${sessionid}-${branchid}-${tomonth}-${rid}-${jobName}`;
     
+    const oldJob = await myQueue.getJob(jobId);
+    if (oldJob) {
+        console.log(`[ADMIN] Removing existing job ${jobId} to allow re-run`);
+        await oldJob.remove();
+    }
+    
     console.log(`[ADMIN] Adding job: ${jobName} with ID: ${jobId}`);
     
     await myQueue.add(jobName, { enrid, sessionid, branchid, tomonth, rid, jobName }, { 
@@ -62,6 +68,12 @@ exports.addWebhookJob = async (req, res, next) => {
 
 
     const jobId = `webhook-${payid}-${orderid}-${branchid}-${status}-${jobName}`;
+
+    const oldJob = await myQueue.getJob(jobId);
+    if (oldJob) {
+        console.log(`[ADMIN] Removing existing Webhook job ${jobId} to allow re-run`);
+        await oldJob.remove();
+    }
 
     console.log(`[ADMIN] Adding Webhook job: ${jobName} with ID: ${jobId}`);
 

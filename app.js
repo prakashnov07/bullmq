@@ -1,3 +1,18 @@
+const originalLog = console.log;
+if (process.env.NODE_ENV === 'production') {
+    console.log = (...args) => {
+        if (args.some(arg => typeof arg === 'string' && (
+            arg.includes('listening on port') || 
+            arg.includes('received SIGTERM') || 
+            arg.includes('configured for production') ||
+            arg.includes('shutting down gracefully')
+        ))) {
+            originalLog(...args);
+        }
+    };
+    console.debug = () => {};
+}
+
 const express = require('express');
 const app = express();
 

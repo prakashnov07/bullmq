@@ -62,7 +62,7 @@ const createAllWorkers = (io, workerCount = 1) => {
 
                 // Add common error handling
                 worker.on('error', (err) => {
-                    console.error(`${workerType} Worker ${i} error: workerFactory`, err.message);
+                    // console.error(`${workerType} Worker ${i} error: workerFactory`, err.message);
                 });
 
                 worker.on('failed', (job, err) => {

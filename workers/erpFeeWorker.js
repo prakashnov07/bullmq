@@ -19,14 +19,8 @@ exports.createErpFeeWorker = (io) => {
         const rid = job.data.rid;
 
         try {
-          // Extend the lock every 30s to prevent stalling during long PHP calls
-          const keepAlive = setInterval(() => job.extendLock(300000).catch(() => {}), 30000);
-          try {
-            await axios.post(`${devUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
+            await axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
             console.log(job.data);
-          } finally {
-            clearInterval(keepAlive);
-          }
         } catch (error) {
           console.error(error);
           throw error;
