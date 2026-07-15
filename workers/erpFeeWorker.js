@@ -114,6 +114,20 @@ exports.createErpFeeWorker = (io) => {
           throw error;
         }
       }
+
+      if (job.name == 'commit_attendance') {
+        const atype = job.data.atype;
+        const redisKey = job.data.redisKey;
+        const redisVal = job.data.redisVal;
+
+        try {
+          await axios.post(`${productionUrl}/cron_jobs/RunCommitAttendanceBullMq.php`, { atype, redisKey, redisVal, name: job.name });
+          console.log(job.data);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+      }
     },
     {  
       connection: sharedConnection, 

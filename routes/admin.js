@@ -7,6 +7,7 @@ const extractCommonParams = require('../middleware/extractCommonParams');
 
 router.post('/add-job', adminController.addJob);
 router.post('/add-webhook-job', adminController.addWebhookJob);
+router.post('/add-commit-attendance-job', adminController.addCommitAttendanceJob);
 router.post('/add-bulkattendance-job', adminController.addBulkAttendanceJob);
 router.post('/add-send-fee-reminder-job', adminController.addSendFeeReminderJob);
 router.post('/add-send-message-job', adminController.addSendMessageJob);

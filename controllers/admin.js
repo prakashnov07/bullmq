@@ -81,7 +81,23 @@ exports.addWebhookJob = async (req, res, next) => {
         delay,
         jobId 
     });
-    res.status(200).json({ message: 'Job added successfully', jobId });
+};
+
+
+exports.addCommitAttendanceJob = async (req, res, next) => {
+
+    const atype = req.body.atype;
+    const redisKey = req.body.redisKey;
+    const redisVal = req.body.redisVal;
+    const jobName = req.body.jobName || 'commit_attendance';
+    const delay = req.body.delay || 30000; // 30 seconds delay
+    const priority = req.body.priority || 50;
+
+    await myQueue.add(jobName, { atype, redisKey, redisVal, jobName }, { 
+        delay, 
+        priority 
+    });
+    res.status(200).json({ message: 'Job added successfully' });
 
 };
 
