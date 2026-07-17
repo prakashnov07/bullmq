@@ -1,5 +1,5 @@
 exports.workerConfig = {
-    concurrency: 20,
+    concurrency: 10,
 
     // Lock must be held for the entire job duration.
     // BullMQ renews the lock every lockDuration/2, so set this well above

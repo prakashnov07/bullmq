@@ -1,5 +1,5 @@
 const { Worker } = require('bullmq');
-const axios = require('axios');
+const axios = require('./utils/optimizedAxios');
 const QUEUE_NAME = 'pending-fees-reload-job';
 const { devUrl, productionUrl } = require('./utils/serverUrl');
 const { sharedConnection } = require('./utils/sharedConnection');
@@ -132,6 +132,7 @@ exports.createErpFeeWorker = (io) => {
     {  
       connection: sharedConnection, 
       ...sharedConfig.workerConfig,
+      concurrency: 3, // Limit concurrent HTTP requests to prevent PHP/MySQL/Redis bottlenecks
     }
   );
 };
