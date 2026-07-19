@@ -150,6 +150,9 @@ server.listen(port, '0.0.0.0', () => {
   console.log(`Process ${process.pid} listening on port ${port} with ${workers.length} total workers`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Socket.IO CORS origin: ${socketConfig.cors.origin}`);
+  if (process.send) {
+    process.send('ready');
+  }
 });
 
 // Improved graceful shutdown

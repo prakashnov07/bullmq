@@ -17,7 +17,7 @@ module.exports = {
     // Auto-restart configuration
     max_restarts: 10,
     min_uptime: '10s',
-    max_memory_restart: '500M',
+    max_memory_restart: '1G',
     
     // Logging
     log_file: './logs/combined.log',
@@ -26,7 +26,7 @@ module.exports = {
     
     // Graceful shutdown
     kill_timeout: 5000,
-    wait_ready: true,
+    wait_ready: false,
     listen_timeout: 3000
   }]
 };

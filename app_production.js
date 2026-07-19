@@ -1,3 +1,18 @@
+const originalLog = console.log;
+if (process.env.NODE_ENV === 'production') {
+    console.log = (...args) => {
+        if (args.some(arg => typeof arg === 'string' && (
+            arg.includes('listening on port') || 
+            arg.includes('received SIGTERM') || 
+            arg.includes('configured for production') ||
+            arg.includes('shutting down gracefully')
+        ))) {
+            originalLog(...args);
+        }
+    };
+    console.debug = () => {};
+}
+
 const express = require('express');
 const app = express();
 
@@ -90,6 +105,9 @@ workers.forEach(worker => {
 const port = 3002; // production
 server.listen(port, () => {
   console.log(`Process ${process.pid} listening on port ${port} with ${workers.length} total workers`);
+   if (process.send) {
+    process.send('ready');
+  }
 });
 
 // Improved graceful shutdown
