@@ -132,7 +132,7 @@ exports.createErpFeeWorker = (io) => {
     {  
       connection: sharedConnection, 
       ...sharedConfig.workerConfig,
-      concurrency: 3, // Limit concurrent HTTP requests to prevent PHP/MySQL/Redis bottlenecks
+      concurrency: 2, // Throttled to 2 concurrent HTTP requests per worker instance to prevent PHP-FPM CPU spikes
     }
   );
 };

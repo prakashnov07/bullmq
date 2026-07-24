@@ -55,31 +55,36 @@ exports.addJob = async (req, res, next) => {
 };
 
 exports.addWebhookJob = async (req, res, next) => {
+    try {
+        const payid = req.body.payid;
+        const orderid = req.body.orderid;
+        const status = req.body.status;
+        const message = req.body.message;
+        const branchid = req.body.branchid;
+        const razorpay_signature = req.body.razorpay_signature;
+        const jobName = req.body.jobName || 'webhook';
+        const delay = req.body.delay !== undefined ? Number(req.body.delay) : 30000; // Default delay of 30 seconds
 
-    const payid = req.body.payid;
-    const orderid = req.body.orderid;
-    const status = req.body.status;
-    const message = req.body.message;
-    const branchid = req.body.branchid;
-    const razorpay_signature = req.body.razorpay_signature;
-    const jobName = req.body.jobName || 'webhook';
-    const delay = req.body.delay || 30000; // Default delay of 30 seconds
+        const jobId = `webhook-${payid}-${orderid}-${branchid}-${status}-${jobName}`;
 
+        const oldJob = await myQueue.getJob(jobId);
+        if (oldJob) {
+            console.log(`[ADMIN] Removing existing Webhook job ${jobId} to allow re-run`);
+            await oldJob.remove().catch(err => console.error(`[ADMIN] Could not remove existing job ${jobId}:`, err.message));
+        }
 
-    const jobId = `webhook-${payid}-${orderid}-${branchid}-${status}-${jobName}`;
+        console.log(`[ADMIN] Adding Webhook job: ${jobName} with ID: ${jobId}`);
 
-    const oldJob = await myQueue.getJob(jobId);
-    if (oldJob) {
-        console.log(`[ADMIN] Removing existing Webhook job ${jobId} to allow re-run`);
-        await oldJob.remove();
+        await myQueue.add(jobName, { payid, orderid, branchid, status, message, razorpay_signature, jobName }, { 
+            delay,
+            jobId 
+        });
+
+        res.status(200).json({ message: 'Job added successfully', jobId });
+    } catch (error) {
+        console.error('[ADMIN] Error adding webhook job:', error);
+        res.status(500).json({ message: 'Failed to add webhook job', error: error.message });
     }
-
-    console.log(`[ADMIN] Adding Webhook job: ${jobName} with ID: ${jobId}`);
-
-    await myQueue.add(jobName, { payid, orderid, branchid, status, message, razorpay_signature, jobName }, { 
-        delay,
-        jobId 
-    });
 };
 
 
@@ -102,27 +107,72 @@ exports.addCommitAttendanceJob = async (req, res, next) => {
 
 
 exports.addBulkAttendanceJob = async (req, res, next) => {
+    try {
+        const { branchid, enrid, dates, userid, sessionid } = req.body;
+        const jobName = req.body.jobName || 'random_attendance';
+        const priority = req.body.priority !== undefined ? Number(req.body.priority) : 20;
+        const delay = req.body.delay !== undefined ? Number(req.body.delay) : 0;
 
-    const { branchid, enrid, dates, jobName, userid, sessionid, priority } = req.body;
+        const job = await myQueue.add(
+            jobName, 
+            { branchid, enrid, dates, userid, sessionid, priority, jobName }, 
+            { 
+                priority,
+                delay
+            }
+        );
 
-    await myQueue.add(jobName || 'random_attendance', { branchid, enrid, dates, userid, sessionid, priority }, { priority: priority || 20 });
-    res.status(200).json({ message: 'Job added successfully' });
-
+        res.status(200).json({ message: 'Job added successfully', jobId: job.id });
+    } catch (error) {
+        console.error('[ADMIN] Error adding bulk attendance job:', error);
+        res.status(500).json({ message: 'Failed to add bulk attendance job', error: error.message });
+    }
 };
 
 exports.addSendFeeReminderJob = async (req, res, next) => {
+    try {
+        const { enrid, title, month, comment, branchid, sessionid, owner } = req.body;
+        const jobName = req.body.jobName || 'send_fee_reminder';
+        const priority = req.body.priority !== undefined ? Number(req.body.priority) : 19;
+        const delay = req.body.delay !== undefined ? Number(req.body.delay) : 0;
 
-    const { enrid, title, month, comment, branchid, sessionid, owner, jobName, priority } = req.body;
+        const job = await myQueue.add(
+            jobName, 
+            { branchid, enrid, sessionid, title, owner, month, comment, jobName }, 
+            { 
+                priority,
+                delay
+            }
+        );
 
-    await myQueue.add(jobName || 'send_fee_reminder', { branchid, enrid, sessionid, title, owner, month, comment }, { priority: priority || 19 });
-    res.status(200).json({ message: 'Job added successfully' });
+        res.status(200).json({ message: 'Job added successfully', jobId: job.id });
+    } catch (error) {
+        console.error('[ADMIN] Error adding send fee reminder job:', error);
+        res.status(500).json({ message: 'Failed to add send fee reminder job', error: error.message });
+    }
 };
 
 exports.addSendMessageJob = async (req, res, next) => {
+    try {
+        const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, mobile } = req.body;
+        const jobName = req.body.jobName || 'send_message';
+        const priority = req.body.priority !== undefined ? Number(req.body.priority) : 18;
+        const delay = req.body.delay !== undefined ? Number(req.body.delay) : 0;
 
-    const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, mobile, jobName, priority } = req.body;
-    await myQueue.add(jobName || 'send_message', { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token }, { priority: priority || 18 });
-    res.status(200).json({ message: 'Job added successfully' });
+        const job = await myQueue.add(
+            jobName, 
+            { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, jobName }, 
+            { 
+                priority,
+                delay
+            }
+        );
+
+        res.status(200).json({ message: 'Job added successfully', jobId: job.id });
+    } catch (error) {
+        console.error('[ADMIN] Error adding send message job:', error);
+        res.status(500).json({ message: 'Failed to add send message job', error: error.message });
+    }
 };
 
 exports.addSendMessageBulkJob = async (req, res, next) => {
