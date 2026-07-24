@@ -1,6 +1,5 @@
 const { Queue, Worker } = require('bullmq');
-const { sharedConnection } = require('../workers/utils/sharedConnection');
-const queueOpts = { connection: sharedConnection };
+const { sharedConnection, queueOpts } = require('../workers/utils/sharedConnection');
 const myQueue = new Queue('pending-fees-reload-job', queueOpts);
 const policyQueue = new Queue('pull-policy-job', queueOpts);
 const homeworkQueue = new Queue('fetch-home-work-job', queueOpts);
