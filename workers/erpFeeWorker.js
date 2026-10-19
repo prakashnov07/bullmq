@@ -11,15 +11,16 @@ exports.createErpFeeWorker = (io) => {
     async job => {
       console.log(`[WORKER] Processing job: ${job.id} (Name: ${job.name})`);
 
-      if (job.name == 'reset-feehead' || job.name == 'enquiry-receipt') {
+      if (job.name == 'reset-feehead' || job.name == 'enquiry-receipt' || job.name == 'pocket-money-ledger') {
         const enrid = job.data.enrid;
         const sessionid = job.data.sessionid;
         const branchid = job.data.branchid;
         const tomonth = job.data.tomonth;
         const rid = job.data.rid;
+        const amount = job.data.amount;
 
         try {
-            await axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid });
+            await axios.post(`${productionUrl}/cron_jobs/RunBullMq.php`, { enrid, sessionid, branchid, name: job.name, tomonth, rid, amount });
             console.log(job.data);
         } catch (error) {
           console.error(error);

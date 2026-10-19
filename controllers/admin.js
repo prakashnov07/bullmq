@@ -28,6 +28,7 @@ exports.addJob = async (req, res, next) => {
     const sessionid = req.body.sessionid;
     const tomonth = req.body.monthid;
     const rid = req.body.rid;
+    const amount = req.body.amount;
     const branchid = req.query.branchid ? req.query.branchid : req.body.branchid;
     const jobName = req.body.queueName || 'reset-feehead';
     const delay = req.body.delay || 0;
@@ -46,7 +47,7 @@ exports.addJob = async (req, res, next) => {
     
     console.log(`[ADMIN] Adding job: ${jobName} with ID: ${jobId}`);
     
-    await myQueue.add(jobName, { enrid, sessionid, branchid, tomonth, rid, jobName }, { 
+    await myQueue.add(jobName, { enrid, sessionid, branchid, tomonth, rid, amount, jobName }, { 
         delay,
         jobId // Determinstic ID prevents duplicates
     });
@@ -212,6 +213,32 @@ exports.addSendMessageBulkJob = async (req, res, next) => {
 
     res.status(200).json({ message: 'Bulk message jobs added successfully', jobCount: jobs.length });
 };
+
+exports.addPocketMoneyLedgerJob = async (req, res, next) => {
+    try {
+        const { enrid, branchid, sessionid, amount } = req.body;
+        const jobName = req.body.jobName || req.body.queueName || 'pocket-money-ledger';
+        const priority = req.body.priority !== undefined ? Number(req.body.priority) : 15;
+        const delay = req.body.delay !== undefined ? Number(req.body.delay) : 0;
+        const jobId = `pocketMoneyLedger-${enrid}-${sessionid}-${branchid}-${Date.now()}`;
+
+        const job = await myQueue.add(
+            jobName,
+            { enrid, branchid, sessionid, amount, jobName },
+            {
+                priority,
+                delay,
+                jobId
+            }
+        );
+
+        res.status(200).json({ message: 'Job added successfully', jobId: job.id });
+    } catch (error) {
+        console.error('[ADMIN] Error adding pocket money ledger job:', error);
+        res.status(500).json({ message: 'Failed to add pocket money ledger job', error: error.message });
+    }
+};
+
 
 exports.postAddPullPolicyJob = async (req, res, next) => {
     const { ptype, jobName, priority, branchid, clientSocketId } = req.body;
