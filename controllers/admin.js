@@ -155,14 +155,14 @@ exports.addSendFeeReminderJob = async (req, res, next) => {
 
 exports.addSendMessageJob = async (req, res, next) => {
     try {
-        const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, mobile } = req.body;
+        const { enrid, classid, sectionid, token, content, title, branchid, sessionid, owner, mobile, whatsapp } = req.body;
         const jobName = req.body.jobName || 'send_message';
         const priority = req.body.priority !== undefined ? Number(req.body.priority) : 18;
         const delay = req.body.delay !== undefined ? Number(req.body.delay) : 0;
 
         const job = await myQueue.add(
             jobName, 
-            { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, jobName }, 
+            { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, jobName, whatsapp }, 
             { 
                 priority,
                 delay

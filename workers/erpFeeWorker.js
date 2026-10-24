@@ -91,9 +91,10 @@ exports.createErpFeeWorker = (io) => {
         const classid = job.data.classid;
         const sectionid = job.data.sectionid;
         const token = job.data.token;
+        const whatsapp = job.data.whatsapp;
 
         try {
-          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, name: job.name });
+          await axios.post(`${productionUrl}/cron_jobs/RunSendMessageBullMq.php`, { branchid, enrid, sessionid, title, owner, mobile, content, classid, sectionid, token, name: job.name, whatsapp });
           console.log(job.data);
         } catch (error) {
           console.error(error);
